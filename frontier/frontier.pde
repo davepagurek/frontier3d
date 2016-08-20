@@ -3,6 +3,7 @@ float[] heights;
 int[][] faces;
 
 int radius = 200;
+float WORLD_SIZE = 10000;
 
 void setup() {
   size(640, 360, P3D); 
@@ -15,10 +16,30 @@ void mouseClicked() {
   heights = new float[200];
   float offset = random(100,500);
   
-  for (int i=0; i<points.length; i++) {
+  for (int i=0; i<points.length-4; i++) {
     points[i][0] = random(-radius, radius);
     points[i][1] = random(-radius, radius);
-    heights[i] = noise(offset+points[i][0]/100, offset+points[i][1]/100)*400;
+    heights[i] = (
+      noise(offset+points[i][0]/100, offset+points[i][1]/100)
+      + pow(sqrt(pow(points[i][0],2) + pow(points[i][1],2))/(radius*1.5), 2)
+    )*400;
+    println(heights[i]);
+  }
+
+  points[points.length-4][0] = -WORLD_SIZE;
+  points[points.length-4][1] = -WORLD_SIZE;
+
+  points[points.length-3][0] = WORLD_SIZE;
+  points[points.length-3][1] = WORLD_SIZE;
+
+  points[points.length-2][0] = WORLD_SIZE;
+  points[points.length-2][1] = -WORLD_SIZE;
+
+  points[points.length-1][0] = -WORLD_SIZE;
+  points[points.length-1][1] = WORLD_SIZE;
+
+  for (int i = points.length-4; i < points.length; i++) {
+    heights[i] = -WORLD_SIZE;
   }
   
   faces = delaunayFaces(points);
@@ -54,4 +75,12 @@ void draw() {
     }
     endShape(CLOSE);
   }
+
+  fill(#0B6BBA);
+  beginShape();
+  vertex(-WORLD_SIZE, -WORLD_SIZE, 300);
+  vertex(-WORLD_SIZE, WORLD_SIZE, 300);
+  vertex(WORLD_SIZE, WORLD_SIZE, 300);
+  vertex(WORLD_SIZE, -WORLD_SIZE, 300);
+  endShape(CLOSE);
 }
