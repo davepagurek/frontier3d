@@ -7,14 +7,20 @@ class House {
   private ArrayList<House> children;
   
   House(PVector coord, ArrayList<PVector> verts, int depth) {
-    loc = coord;
+    loc = coord.copy();
     w = random(0.5, 1)*(15-depth*1.5);
     h = random(0.5, 1)*(15-depth*1.5);
     d = random(0.5, 1)*(20-depth*1.2);
     angle = random(0, 2*PI);
     
     if (depth == 0) {
-      elevation = abs(maxIn(verts).z - coord.z);
+      float dist = abs(maxIn(verts).z - coord.z);
+      if (random(0,10)>5 && dist < 10) {
+        elevation = dist;
+      } else {
+        d += dist*0.5;
+        loc.set(loc.x, loc.y, loc.z+dist);
+      }
     } else {
       elevation = 0;
     }
@@ -41,13 +47,15 @@ class House {
     
     popMatrix();
     
-    fill(#4A3B34);
-    for (int i=0; i<4; i++) {
-      pushMatrix();
-      rotateZ(2*PI*(float(i) + 0.5)/4.0);
-      translate(min(w, h)*0.4, 0, elevation);
-      rectPrism(1, 1, elevation*2);
-      popMatrix();
+    if (elevation != 0) {
+      fill(#4A3B34);
+      for (int i=0; i<4; i++) {
+        pushMatrix();
+        rotateZ(2*PI*(float(i) + 0.5)/4.0);
+        translate(min(w, h)*0.4, 0, elevation);
+        rectPrism(1, 1, elevation*2);
+        popMatrix();
+      }
     }
     
     popMatrix();
