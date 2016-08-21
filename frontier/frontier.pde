@@ -29,9 +29,9 @@ void draw() {
   translate(0, Island.RADIUS, -Island.RADIUS*0.75); // - mouseY
   rotateZ(float(mouseX) / float(width) * 2*PI);
   
-  ambientLight(red(ambient), green(ambient), blue(ambient));
+  /*ambientLight(red(ambient), green(ambient), blue(ambient));
   pointLight(red(main), green(main), blue(main), 0, 300, -100);
-  pointLight(red(bg), green(main), blue(main), 0, -300, -400);
+  pointLight(red(bg), green(main), blue(main), 0, -300, -400);*/
 
   island.draw();
   water.draw();

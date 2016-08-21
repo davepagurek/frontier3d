@@ -1,7 +1,7 @@
 class Island {
   private float[][] points;
   private float[] heights;
-  private int[][] faces;
+  ArrayList<Surface> surfaces;
 
   private float spikiness;
 
@@ -31,21 +31,24 @@ class Island {
       heights[NUM_POINTS+i] = WORLD_SIZE;
     }
     
-    faces = delaunayFaces(points);
+    surfaces = new ArrayList<Surface>();
+    int[][] faces = delaunayFaces(points);
+    for (int i=0; i<faces.length; i++) {
+      boolean ok = true;
+      for (int j : faces[i]) {
+        if (j >= points.length) {
+          ok = false;
+          break;
+        }
+      }
+      if (!ok) continue;
+      surfaces.add(new Surface(faces[i], points, heights));
+    }
   }
 
   void draw() {
-    for (int i = 0; i < faces.length; i++) {
-      fill(#C22F2F);
-      beginShape();  
-      for (int j = 0; j< faces[i].length; j++) {
-        int pt = faces[i][j];
-        if ( pt < points.length  )
-        {
-          vertex( points[pt][0], points[pt][1], heights[pt] );
-        }
-      }
-      endShape(CLOSE);
+    for (Surface s : surfaces) {
+      s.draw();
     }
   }
 }
