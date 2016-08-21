@@ -10,6 +10,7 @@ class Surface {
   public SurfaceType type;
   color col;
   Tree tree;
+  House house;
 
   Surface(int[] corners, float[][] points, float[] heights) {
     vertices = new ArrayList<PVector>();
@@ -37,14 +38,13 @@ class Surface {
     float angle = PVector.angleBetween(normal, new PVector(0, 0, 1));
     if (abs(angle) < PI*0.65) {
       type = SurfaceType.BLUFF;
-      //col = lerpColor(#782A44, #6B1B36, random(0,1));
-      //col = #8A717A;
     } else {
       type = SurfaceType.GRASS;
-      //col = lerpColor(#B03030, #CF5959, random(0,1));
-      //col = #DB5656;
-      if (random(0,10)>8 && centroid.z < Water.waterHeight) {
+      float rand = random(0, 20);
+      if (rand>17.5 && rand<=19.5 && centroid.z < Water.waterHeight) {
         tree = new Tree(centroid, normal, 0);
+      } else if (rand > 19.5  && centroid.z < Water.waterHeight) {
+        house = new House(centroid, vertices, 0);
       }
     }
     col = lerpColor(#A14D4D, #DB4242, (abs(angle) - 0.6)*(1.0/0.6)/PI);
@@ -59,6 +59,9 @@ class Surface {
     endShape(CLOSE);
     if (tree != null) {
       tree.draw();
+    }
+    if (house != null) {
+      house.draw();
     }
   }
 }
