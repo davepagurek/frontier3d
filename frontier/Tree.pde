@@ -6,20 +6,28 @@ class Tree {
   private ArrayList<Tree> children;
   private Leaf leaf;
   
-  Tree(PVector coord, int depth) {
+  Tree(PVector coord, PVector normal, int depth) {
     thickness = 1;
     location = coord;
-    end = new PVector(
-      coord.x + random(-1, 1)*(10-depth*1.5),
-      coord.y + random(-1, 1)*(10-depth*1.5),
-      coord.z - random(0, 2)*(10-depth*1.5)
-    );
+    if (depth == 0) {
+      PVector n = normal.copy();
+      n.setMag(random(1,20));
+      n.add(PVector.random3D());
+      end = coord.copy();
+      end.add(n);
+    } else {
+      end = new PVector(
+        coord.x + random(-1, 1)*(10-depth*1.5),
+        coord.y + random(-1, 1)*(10-depth*1.5),
+        coord.z - random(0, 2)*(10-depth*1.5)
+      );
+    }
     
     children = new ArrayList<Tree>();
     if (depth < MAX_DEPTH) {
       int numChildren = int(random(0,3));
       for (int i=0; i<numChildren; i++) {
-        children.add(new Tree(end, depth+1));
+        children.add(new Tree(end, end, depth+1));
       }
     }
     if (children.size() == 0) {
@@ -28,7 +36,7 @@ class Tree {
   }
   
   void draw() {
-    fill(#000000);
+    fill(#6B4848);
     for (int i=0; i<4; i++) {
       beginShape();
       vertex(
