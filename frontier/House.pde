@@ -1,3 +1,14 @@
+enum HouseSide {
+  NORTH,
+  EAST,
+  SOUTH,
+  WEST,
+  TOP
+}
+
+import java.util.Collections;
+import java.util.Arrays;
+
 class House {
   private PVector loc;
   private float w, h, d, elevation, angle;
@@ -6,12 +17,32 @@ class House {
   private static final int MAX_DEPTH = 3;
   private ArrayList<House> children;
   
-  House(PVector coord, ArrayList<PVector> verts, int depth) {
-    loc = coord.copy();
-    w = random(0.5, 1)*(15-depth*1.5);
-    h = random(0.5, 1)*(15-depth*1.5);
-    d = random(0.5, 1)*(20-depth*1.2);
-    angle = random(0, 2*PI);
+  House(PVector coord, ArrayList<PVector> verts, int depth, HouseSide side) {
+    w = random(0.5, 1)*(15-depth*3);
+    h = random(0.5, 1)*(15-depth*3);
+    d = random(0.5, 1)*(20-depth*3);
+    switch (side) {
+    case TOP:
+      loc = coord.copy();
+      angle = random(0, 2*PI);
+      break;
+    case NORTH:
+      loc = new PVector(coord.x, coord.y-h/2, coord.z);
+      angle = 0;
+      break;
+    case SOUTH:
+      loc = new PVector(coord.x, coord.y+h/2, coord.z);
+      angle = 0;
+      break;
+    case EAST:
+      loc = new PVector(coord.x+w/2, coord.y, coord.z);
+      angle = 0;
+      break;
+    case WEST:
+      loc = new PVector(coord.x-w/2, coord.y, coord.z);
+      angle = 0;
+      break;
+    }
     
     if (depth == 0) {
       float dist = abs(maxIn(verts).z - coord.z);
@@ -29,6 +60,60 @@ class House {
     roof = #8A614D;
     
     children = new ArrayList<House>();
+    if (depth < MAX_DEPTH) {
+      int numChildren = int(random(0, 2));
+      ArrayList<HouseSide> sides = new ArrayList<HouseSide>(Arrays.asList(
+        HouseSide.NORTH,
+        HouseSide.EAST,
+        HouseSide.SOUTH,
+        HouseSide.WEST,
+        HouseSide.TOP
+      ));
+      for (int i=0; i<numChildren; i++) {
+        Collections.shuffle(sides);
+        HouseSide s = sides.get(sides.size()-1);
+        sides.remove(sides.size()-1);
+        PVector childLoc = new PVector();
+        switch (s) {
+        case TOP:
+          childLoc = new PVector(
+            random(-w/2, w/2),
+            random(-h/2, h/2),
+            -elevation-d-2
+          );
+          break;
+        case NORTH:
+          childLoc = new PVector(
+            random(-w/2,w/2),
+            -h/2,
+            -random(d/2, d)
+          );
+          break;
+        case SOUTH:
+          childLoc = new PVector(
+            random(-w/2,w/2),
+            h/2,
+            -random(d/2, d)
+          );
+          break;
+        case EAST:
+          childLoc = new PVector(
+            w/2,
+            random(-h/2,h/2),
+            -random(d/2, d)
+          );
+          break;
+        case WEST:
+          childLoc = new PVector(
+            -w/2,
+            random(-h/2,h/2),
+            -random(d/2, d)
+          );
+          break;
+        }
+        children.add(new House(childLoc, null, depth+1, s));
+      }
+    }
   }
   
   void draw() {
@@ -56,6 +141,10 @@ class House {
         rectPrism(1, 1, elevation*2);
         popMatrix();
       }
+    }
+    
+    for (House child : children) {
+      child.draw();
     }
     
     popMatrix();

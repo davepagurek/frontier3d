@@ -44,10 +44,11 @@ class Surface {
       if (rand>17.5 && rand<=19.5 && centroid.z < Water.waterHeight) {
         tree = new Tree(centroid, normal, 0);
       } else if (rand > 19.5  && centroid.z < Water.waterHeight) {
-        house = new House(centroid, vertices, 0);
+        house = new House(centroid, vertices, 0, HouseSide.TOP);
       }
     }
-    col = lerpColor(#A14D4D, #DB4242, (abs(angle) - 0.6)*(1.0/0.6)/PI);
+    //col = lerpColor(#A14D4D, #DB4242, (abs(angle) - 0.6)*(1.0/0.6)/PI);
+    col = lerpColor(#913D3D, #DB4242, (abs(angle) - 0.7)*(1.0/0.7)/PI);
   }
 
   void draw() {
