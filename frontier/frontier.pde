@@ -8,7 +8,7 @@ Island island;
 Water water;
 
 void setup() {
-  size(640, 360, P3D); 
+  size(800, 450, P3D); 
   pixelDensity(displayDensity());
   mouseClicked();
 }
@@ -25,7 +25,7 @@ void draw() {
   translate(width/2, height/2, 0); // - mouseY
   rotateX(-0.5*PI);
   
-  translate(0, (float(mouseY) / float(height) - 0.5) * Island.RADIUS*1.5, 0);
+  translate(0, (float(mouseY) / float(height) - 0.5) * float(height)*2, 0);
   translate(0, Island.RADIUS, -Island.RADIUS*0.75); // - mouseY
   rotateZ(float(mouseX) / float(width) * 2*PI);
   

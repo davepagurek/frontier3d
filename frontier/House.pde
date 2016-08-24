@@ -16,8 +16,12 @@ class House {
   private static final color window = #1C3C70;
   private static final int MAX_DEPTH = 3;
   private ArrayList<House> children;
+  private HouseSide side;
+  private int depth;
   
-  House(PVector coord, ArrayList<PVector> verts, int depth, HouseSide side) {
+  House(PVector coord, ArrayList<PVector> verts, int _depth, HouseSide _side) {
+    side = _side;
+    depth = _depth;
     w = random(0.5, 1)*(15-depth*3);
     h = random(0.5, 1)*(15-depth*3);
     d = random(0.5, 1)*(20-depth*3);
@@ -53,7 +57,7 @@ class House {
         loc.set(loc.x, loc.y, loc.z+dist);
       }
     } else {
-      elevation = 0;
+      elevation = random(5, d*0.4);
     }
     
     walls = lerpColor(#BAAB91, #E0CDAB, random(0,1));
@@ -77,37 +81,37 @@ class House {
         switch (s) {
         case TOP:
           childLoc = new PVector(
-            random(-w/2, w/2),
-            random(-h/2, h/2),
+            0,
+            0,
             -elevation-d-2
           );
           break;
         case NORTH:
           childLoc = new PVector(
-            random(-w/2,w/2),
+            0,
             -h/2,
-            -random(d/2, d)
+            -elevation-d/2
           );
           break;
         case SOUTH:
           childLoc = new PVector(
-            random(-w/2,w/2),
+            0,
             h/2,
-            -random(d/2, d)
+            -elevation-d/2
           );
           break;
         case EAST:
           childLoc = new PVector(
             w/2,
-            random(-h/2,h/2),
-            -random(d/2, d)
+            0,
+            -elevation-d/2
           );
           break;
         case WEST:
           childLoc = new PVector(
             -w/2,
-            random(-h/2,h/2),
-            -random(d/2, d)
+            0,
+            -elevation-d/2
           );
           break;
         }
@@ -123,22 +127,56 @@ class House {
     
     fill(walls);
     pushMatrix();
-    translate(0, 0, -elevation);
-    rectPrism(w, h, d);
-    
-    fill(roof);
-    translate(0, 0, -d);
-    rectPrism(w*1.15, h*1.15, 2);
-    
+      translate(0, 0, -elevation);
+      rectPrism(w, h, d);
+      
+      fill(roof);
+      translate(0, 0, -d);
+      rectPrism(w*1.15, h*1.15, 2);
     popMatrix();
     
     if (elevation != 0) {
       fill(#4A3B34);
-      for (int i=0; i<4; i++) {
+      if (side == HouseSide.TOP) {
+        for (int i=0; i<4; i++) {
+          pushMatrix();
+          rotateZ(2*PI*(float(i) + 0.5)/4.0);
+          translate(min(w, h)*0.4, 0, elevation);
+          rectPrism(1, 1, elevation*2);
+          popMatrix();
+        }
+      } else {
         pushMatrix();
-        rotateZ(2*PI*(float(i) + 0.5)/4.0);
-        translate(min(w, h)*0.4, 0, elevation);
-        rectPrism(1, 1, elevation*2);
+        int angle = 0;
+        float len = h;
+        float horiz = w;
+        float thickness = 2*(4-depth)/4;
+        if (side == HouseSide.NORTH) {
+          angle = 2;
+        }
+        if (side == HouseSide.SOUTH) {
+          angle = 0;
+        }
+        if (side == HouseSide.EAST) {
+          angle = 3;
+          len = w;
+          horiz = h;
+        }
+        if (side == HouseSide.WEST) {
+          angle = 1;
+          len = w;
+          horiz = h;
+        }
+        rotateZ(2*PI*float(angle)/4.0);
+        for (int i=0; i<2; i++) {
+          pushMatrix();
+          translate(i == 0 ? -horiz*0.25 : horiz*0.25, -len*0.125, -elevation/2-(elevation*0.2));
+          float a = -atan((elevation*0.8)/(len*0.75));
+          rotateX(a);
+          box(thickness, ((2*thickness)+(0.8*elevation))/sin(a), thickness);
+          popMatrix();
+        }
+        
         popMatrix();
       }
     }
@@ -162,48 +200,8 @@ PVector maxIn(ArrayList<PVector> vertices) {
 }
 
 void rectPrism(float w, float h, float d) {
-  // Base
-  beginShape();
-  vertex(-w/2, -h/2, 0);
-  vertex(w/2, -h/2, 0);
-  vertex(w/2, h/2, 0);
-  vertex(-w/2, h/2, 0);
-  endShape(CLOSE);
-  
-  // Top
-  beginShape();
-  vertex(-w/2, -h/2, -d);
-  vertex(w/2, -h/2, -d);
-  vertex(w/2, h/2, -d);
-  vertex(-w/2, h/2, -d);
-  endShape(CLOSE);
-  
-  // Sides
-  beginShape();
-  vertex(-w/2, -h/2, 0);
-  vertex(w/2, -h/2, 0);
-  vertex(w/2, -h/2, -d);
-  vertex(-w/2, -h/2, -d);
-  endShape(CLOSE);
-  
-  beginShape();
-  vertex(-w/2, h/2, 0);
-  vertex(w/2, h/2, 0);
-  vertex(w/2, h/2, -d);
-  vertex(-w/2, h/2, -d);
-  endShape(CLOSE);
-  
-  beginShape();
-  vertex(-w/2, -h/2, 0);
-  vertex(-w/2, h/2, 0);
-  vertex(-w/2, h/2, -d);
-  vertex(-w/2, -h/2, -d);
-  endShape(CLOSE);
-  
-  beginShape();
-  vertex(w/2, -h/2, 0);
-  vertex(w/2, h/2, 0);
-  vertex(w/2, h/2, -d);
-  vertex(w/2, -h/2, -d);
-  endShape(CLOSE);
+  pushMatrix();
+  translate(0,0,-d/2);
+  box(w,h,d);
+  popMatrix();
 }
