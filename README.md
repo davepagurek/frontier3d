@@ -15,13 +15,17 @@ This is inspired by an earlier project of mine to generate 2D landscapes procedu
 Perlin noise is used to create the landscape, which is then tesselated using a Delaunay algorithm. Trees then grow on surfaces that aren't inclined too much. Houses spawn (on stilts if need be), with extensions climbing upwards.
 
 Detail of vertical house sprawl:
+
 <img src='http://www.davepagurek.com/content/images/2016/10/view1.png' />
 
 Detail of trees on a mountain:
+
 <img src='http://www.davepagurek.com/content/images/2016/10/view2.png' />
 
 Detail of houses on stilts:
+
 <img src='http://www.davepagurek.com/content/images/2016/10/view3.png' />
 
 Detail of prime seaside property:
+
 <img src='http://www.davepagurek.com/content/images/2016/10/view4.png' />
